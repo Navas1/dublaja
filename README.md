@@ -135,6 +135,44 @@ curl -X POST "http://localhost:8000/dublaje" \
 
 ---
 
+## 📦 COMPLEMENTO: MVP MONETIZADO & OPERAÇÃO LEAN
+> *Seção opcional para validar o DublaJá como cash cow via WhatsApp + PIX. Não altera a engine principal, a stack técnica ou a rota `/dublaje` já documentadas.*
+
+### 🔐 Fluxo de Validação (Bot + PIX)
+Conecte a API existente a um ciclo de pagamento automatizado:
+1. **Recebimento**: Usuário envia link do YouTube no WhatsApp do bot.
+2. **Gate de Pagamento**: Bot retorna chave PIX + valor (ex: `R$ 4,90/vídeo`).
+3. **Confirmação**: Webhook do gateway (Mercado Pago, Stark Bank, etc.) valida `status: paid`.
+4. **Processamento**: Bot dispara `POST /dublaje` com a URL recebida.
+5. **Entrega**: Arquivo em `OUTPUT_DIR` é enviado automaticamente no chat.
+
+### ✅ Critérios Objetivos de Qualidade
+Substitua avaliações subjetivas por thresholds mensuráveis antes da liberação:
+| Métrica | Threshold | Ação se falhar |
+|---------|-----------|----------------|
+| Whisper Confidence Score | `≥ 0.85` | Revisão manual ou reembolso automático |
+| Termos não traduzidos | `≤ 3/min` | Fallback para `deep-translator` com contexto forçado |
+| Sincronia Áudio-Vídeo | `≤ 200ms` de desvio | Ajuste automático via `ffmpeg -itsoffset` |
+| Tamanho do arquivo | `≤ MAX_VIDEO_SIZE_MB` (do `.env`) | Compressão leve: `ffmpeg -crf 28 -preset fast` |
+
+### 🤖 Integração com a API `/dublaje`
+Use a rota já existente para automação de bots/webhooks:
+```bash
+curl -X POST "http://localhost:8000/dublaje" \
+  -H "Content-Type: application/json" \
+  -d '{"video_url": "https://youtube.com/watch?v=SEU_ID", "language_target": "pt"}'
+```
+💡 **Dica Lean**: Mantenha o bot em worker separado. A API FastAPI responde com `{"status": "processing"}` e só inicia se `GROQ_API_KEY` estiver válida e houver espaço em `OUTPUT_DIR`. Adicione fila de jobs (item do roadmap) quando ultrapassar 3 requisições simultâneas.
+
+### 📱 Notas para VPS & Termux
+- O core é compatível com Linux ARM64 (VPS low-cost ou Termux no Realme).
+- Em mobile/Termux: `pkg install python ffmpeg` → rode em background com `nohup uvicorn main:app --host 0.0.0.0 --port 8000 &`
+- Em VPS dedicado: use `systemd` ou `Docker` (planejado no roadmap) para reinício automático e isolamento de `GROQ_API_KEY`.
+- Recomendado: ativar `MAX_VIDEO_SIZE_MB` no `.env` para evitar estouro de disco em conexões 3G/4G.
+
+### 🔄 Instrução para Indexação
+Este bloco deve ser **appendado** ao final do `README.md` existente. Não modifica pré-requisitos, estrutura de pastas, variáveis de ambiente (`GROQ_API_KEY`, `OUTPUT_DIR`, `MAX_VIDEO_SIZE_MB`, `LANGUAGE_TARGET`) nem a rota `/dublaje`. Focado exclusivamente em validação lean, gate de pagamento e métricas objetivas de entrega.
+
 ## 📁 Estrutura do Projeto
 
 ```
