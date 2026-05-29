@@ -1,15 +1,15 @@
-# Dublaja
+# DublaJá
 
-Dublagem automatica de videos do YouTube - ingles para portugues.
+Dublagem automática de vídeos do YouTube — inglês para português.
 
 ## Como funciona
 
-1. Usuario envia link
-2. Video baixado (yt-dlp)
-3. Audio transcrito (Groq Whisper)
-4. Traduzido para portugues
+1. Usuário envia link
+2. Vídeo baixado (yt-dlp)
+3. Áudio transcrito (Groq Whisper)
+4. Traduzido para português
 5. Voz gerada (edge-tts)
-6. Video final montado
+6. Vídeo final montado
 
 ## Stack
 
@@ -19,7 +19,7 @@ Dublagem automatica de videos do YouTube - ingles para portugues.
 - edge-tts + gTTS
 - yt-dlp + ffmpeg
 
-## Instalacao
+## Instalação
 
 git clone https://github.com/Navas1/dublaja.git
 cd dublaja
@@ -32,6 +32,6 @@ cp .env.example .env
 
 python main.py
 
-## Licenca
+## Licença
 
 MIT
